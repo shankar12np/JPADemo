@@ -7,6 +7,16 @@ public class Order {
     private String customerMobileNumber;
     private String customerName;
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId='" + orderId + '\'' +
+                ", productName='" + productName + '\'' +
+                ", customerMobileNumber='" + customerMobileNumber + '\'' +
+                ", customerName='" + customerName + '\'' +
+                '}';
+    }
+
     public String getProductName() {
         return productName;
     }

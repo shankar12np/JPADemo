@@ -1,12 +1,18 @@
 package org.practice.jpademo.Services;
 
+import org.aspectj.weaver.ast.Or;
 import org.practice.jpademo.DTOs.OrderDTO;
 import org.practice.jpademo.Model.Order;
 import org.practice.jpademo.Model.OrderUpdate;
 import org.practice.jpademo.Repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,7 +58,8 @@ public class OrderService {
     public List<OrderDTO> findAll() {
         return orderRepository.findAll();
     }
-//
+
+
 //    public List<Order> findAllOrders() {
 //        List<OrderDTO> data = orderRepository.findAll();
 //        List<Order> orders = new ArrayList<>();
@@ -68,21 +75,51 @@ public class OrderService {
 //        return orders;
 //    }
 
+    public List<Order> listOrderByPageNumber(int pageNumber, int pageSize,String sortBy, String sortOrder ){
+        Sort sort;
+        if (sortOrder.equalsIgnoreCase("DESC")){
+            sort = Sort.by(sortBy).descending();
+        } else {
+            sort = Sort.by(sortBy).ascending();
+        }
+
+        PageRequest pageRequest = PageRequest.of(pageNumber,pageSize,sort);
+        Page<OrderDTO> pageResponse = orderRepository.findAll(pageRequest);
+
+        List<Order> orders = new ArrayList<>();
+        for (
+                OrderDTO orderDTO : pageResponse.getContent()){
+                    Order order = new Order();
+                    order.setOrderId(orderDTO.getOrderId());
+                    order.setProductName(orderDTO.getProductName());
+                    order.setCustomerName(orderDTO.getCustomerName());
+                    order.setCustomerMobileNumber(orderDTO.getCustomerMobileNumber());
+                    orders.add(order);
+        }
+        return orders;
+
+    }
+
     public OrderDTO deleteByOrderId(String orderId) {
         OrderDTO orderDTO = orderRepository.findByOrderId(orderId);
         orderRepository.delete(orderDTO);
         return orderDTO;
     }
 
-    public OrderDTO updateOrder(String orderId, OrderUpdate orderUpdate) {
+    public void updateOrder(String orderId, OrderUpdate orderUpdate) {
         OrderDTO orderDTO = orderRepository.findByOrderId(orderId);
+        if (orderDTO != null) {
+            // Update the properties of the OrderDTO with the values from the OrderUpdate object
+            orderDTO.setProductName(orderUpdate.getProductName());
+            orderDTO.setCustomerName(orderUpdate.getCustomerName());
+            orderDTO.setCustomerMobileNumber(orderUpdate.getCustomerMobileNumber());
 
-       // orderDTO.setOrderId(orderUpdate.getOrderId());
-        orderDTO.setProductName(orderUpdate.getProductName());
-        orderDTO.setCustomerName(orderUpdate.getCustomerName());
-        orderDTO.setCustomerMobileNumber(orderUpdate.getCustomerMobileNumber());
-        return orderRepository.save(orderDTO);
+            orderRepository.save(orderDTO);
+
+        } else {
+            // Handle the case where the order with the given orderId is not found
+            throw new RuntimeException("Order not found for orderId: " + orderId);
+        }
     }
-
 
 }

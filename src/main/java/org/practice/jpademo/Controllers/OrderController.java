@@ -44,6 +44,13 @@ public class OrderController {
         return ResponseEntity.ok(data);
     }
 
+    @GetMapping("/list-orders-by-pagination")
+    public ResponseEntity<?> listOrdersByPagination(@RequestParam Integer pageNumber,@RequestParam Integer pageSize,
+                                                    @RequestParam String sortBy, @RequestParam String sortOrder){
+        List<Order> orderList = orderService.listOrderByPageNumber(pageNumber,pageSize,sortBy,sortOrder);
+        return new ResponseEntity<>(orderList,HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/{orderId}")
     public ResponseEntity<?> deleteOrder(@PathVariable String orderId) {
         OrderDTO data = orderService.deleteByOrderId(orderId);
