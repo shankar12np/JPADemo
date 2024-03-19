@@ -3,6 +3,7 @@ package org.practice.jpademo.Controllers;
 
 import org.practice.jpademo.DTOs.OrderDTO;
 import org.practice.jpademo.Model.Order;
+import org.practice.jpademo.Model.OrderUpdate;
 import org.practice.jpademo.Services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,18 @@ public class OrderController {
         List<OrderDTO> data = orderService.findAll();
         return ResponseEntity.ok(data);
     }
+
+    @DeleteMapping("/delete/{orderId}")
+    public ResponseEntity<?> deleteOrder(@PathVariable String orderId) {
+        OrderDTO data = orderService.deleteByOrderId(orderId);
+        return new ResponseEntity<>("Order Deleted", HttpStatus.OK);
+    }
+    @PutMapping("/update/{orderId}")
+    public ResponseEntity<?> updateOrder(@PathVariable String orderId, @RequestBody OrderUpdate orderUpdate) {
+        orderService.updateOrder(orderId,orderUpdate);
+        return ResponseEntity.ok("Order Updated");
+    }
+
 
 
 }
