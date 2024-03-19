@@ -4,6 +4,7 @@ package org.practice.jpademo.Controllers;
 import org.practice.jpademo.DTOs.OrderDTO;
 import org.practice.jpademo.Model.Order;
 import org.practice.jpademo.Model.OrderUpdate;
+import org.practice.jpademo.Model.PlaceOrder;
 import org.practice.jpademo.Services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,12 @@ public class OrderController {
     public ResponseEntity<?> createOrder(@RequestBody Order order) {
         orderService.createProduct(order);
         return new ResponseEntity<>("Order Created", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/place-order")
+    public ResponseEntity<?> placeOrder(@RequestBody PlaceOrder placeOrder){
+        Order order = orderService.placeOrder(placeOrder);
+        return new ResponseEntity<>("Ordered Placed ! ",HttpStatus.OK);
     }
 
     @GetMapping("/get-order/{orderId}")
